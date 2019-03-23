@@ -31,3 +31,12 @@ exports.addPhoto = async (req, reply) => {
     throw boom.boomify(err)
   }
 }
+  
+exports.deletePhotos = async (req, reply) => {
+    try {
+      console.log('DELETE all photos');
+      return;
+    } catch (err) {
+      throw boom.boomify(err)
+    }
+}

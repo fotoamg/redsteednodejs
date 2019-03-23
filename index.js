@@ -1,8 +1,27 @@
+const PORT = process.env.PORT || 3000;
+
+// Require the framework and instantiate it
+const fastify = require('fastify')({
+    logger: true
+  })
+
+  
+// Import Routes
+const routes = require('./routes')
+
+
 // External Dependancies
 const boom = require('boom')
 
+// Loop over each route
+routes.forEach((route, index) => {
+    fastify.route(route)
+  })
+
+
 // Require external modules
 const mongoose = require('mongoose')
+
 const Photo = require('./model/Photo')
 
 // Connect to DB
@@ -18,6 +37,21 @@ const Flickr = require("flickrapi"),
       secret: "dc0e0da4045b69cc"
 };
 
+
+fastify.get('/', async (request, reply) => {
+    reply.header('Content-Type', 'text/html')
+    reply.type('text/html')
+    return `<H1>Please use the api at /api/photos...</H1>
+            <p>Or calling photo list at<a href="/photos/food">/photos/food</a></p>
+            <HR/>`;
+ })
+
+ fastify.get('/delay', async (request, reply) => {
+    reply.header('Content-Type', 'text/html')
+    reply.type('text/html')
+    return `Hello World`;
+ })
+  
 Flickr.tokenOnly(flickrOptions, function(error, flickr) {
   // we can now use "flickr" as our API object,
   // but we can only call public methods and access public data
@@ -45,7 +79,8 @@ Flickr.tokenOnly(flickrOptions, function(error, flickr) {
                         lastupdate : result.photo.dates.lastupdate,
                         url : result.photo.urls.url[0]._content
                    });
-                   photo.save()
+                   console.log('X');
+                   // photo.save()
                   } catch (err) {
                     throw boom.boomify(err)
                   }
@@ -59,5 +94,18 @@ Flickr.tokenOnly(flickrOptions, function(error, flickr) {
 });
 console.log("App started");
 
-const PORT = process.env.PORT || 3000;
+
+// Run the server!
+const start = async () => {
+    try {
+      await fastify.listen(PORT, '0.0.0.0')
+      fastify.log.info(`server listening on ${fastify.server.address().port}`)
+    } catch (err) {
+      fastify.log.error(err)
+      process.exit(1)
+    }
+  }
+  start()
+  
+
 
